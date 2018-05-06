@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0025)http://www.广州唐旗服装贸易有限公司.com.cn/ -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="广州唐旗服装贸易有限公司">
+    <meta name="keywords" content="广州唐旗服装贸易有限公司">
+    <title>广州唐旗服装贸易有限公司</title>
+    <link href="./files/cssv.css" rel="stylesheet" type="text/css">
+    <link href="./files/index.css" rel="Stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="./files/lanrentuku.css">
+    <script type="text/javascript">
+
+    function browserRedirect() {
+
+        var sUserAgent = navigator.userAgent.toLowerCase();
+
+        var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+
+        var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+
+        var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+
+        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+
+        var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+
+        var bIsAndroid = sUserAgent.match(/android/i) == "android";
+
+        var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+
+        var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+
+
+    }
+
+    browserRedirect();
+
+</script>
+
+    <script type="text/javascript">
+        var $ = function(id) {
+            return "string" == typeof id ? document.getElementById(id) : id;
+        };
+
+        var Extend = function(destination, source) {
+            for (var property in source) {
+                destination[property] = source[property];
+            }
+
+            return destination;
+        }
+
+        var CurrentStyle = function(element) {
+            return element.currentStyle || document.defaultView.getComputedStyle(element, null);
+        }
+
+        var Bind = function(object, fun) {
+            var args = Array.prototype.slice.call(arguments).slice(2);
+            return function() {
+                return fun.apply(object, args.concat(Array.prototype.slice.call(arguments)));
+            }
+        }
+
+        var Tween = {
+            Quart: {
+                easeOut: function(t, b, c, d) {
+                    return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+                }
+            },
+            Back: {
+                easeOut: function(t, b, c, d, s) {
+                    if (s == undefined) s = 1.70158;
+                    return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+                }
+            },
+            Bounce: {
+                easeOut: function(t, b, c, d) {
+                    if ((t /= d) < (1 / 2.75)) {
+                        return c * (7.5625 * t * t) + b;
+                    } else if (t < (2 / 2.75)) {
+                        return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+                    } else if (t < (2.5 / 2.75)) {
+                        return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+                    } else {
+                        return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+                    }
+                }
+            }
+        }
+
+
+        //容器对象,滑动对象,切换数量
+        var SlideTrans = function(container, slider, count, options) {
+            this._slider = $(slider);
+            this._container = $(container); //容器对象
+            this._timer = null; //定时器
+            this._count = Math.abs(count); //切换数量
+            this._target = 0; //目标值
+            this._t = this._b = this._c = 0; //tween参数
+
+            this.Index = 0; //当前索引
+
+            this.SetOptions(options);
+
+            this.Auto = !!this.options.Auto;
+            this.Duration = Math.abs(this.options.Duration);
+            this.Time = Math.abs(this.options.Time);
+            this.Pause = Math.abs(this.options.Pause);
+            this.Tween = this.options.Tween;
+            this.onStart = this.options.onStart;
+            this.onFinish = this.options.onFinish;
+
+            var bVertical = !!this.options.Vertical;
+            this._css = bVertical ? "top" : "left"; //方向
+
+            //样式设置
+            var p = CurrentStyle(this._container).position;
+            p == "relative" || p == "absolute" || (this._container.style.position = "relative");
+            this._container.style.overflow = "hidden";
+            this._slider.style.position = "absolute";
+
+            this.Change = this.options.Change ? this.options.Change :
+		this._slider[bVertical ? "offsetHeight" : "offsetWidth"] / this._count;
+        };
+        SlideTrans.prototype = {
+            //设置默认属性
+            SetOptions: function(options) {
+                this.options = {//默认值
+                    Vertical: true, //是否垂直方向（方向不能改）
+                    Auto: true, //是否自动
+                    Change: 0, //改变量
+                    Duration: 50, //滑动持续时间
+                    Time: 10, //滑动延时
+                    Pause: 4000, //停顿时间(Auto为true时有效)
+                    onStart: function() { }, //开始转换时执行
+                    onFinish: function() { }, //完成转换时执行
+                    Tween: Tween.Quart.easeOut//tween算子
+                };
+                Extend(this.options, options || {});
+            },
+            //开始切换
+            Run: function(index) {
+                //修正index
+                index == undefined && (index = this.Index);
+                index < 0 && (index = this._count - 1) || index >= this._count && (index = 0);
+                //设置参数
+                this._target = -Math.abs(this.Change) * (this.Index = index);
+                this._t = 0;
+                this._b = parseInt(CurrentStyle(this._slider)[this.options.Vertical ? "top" : "left"]);
+                this._c = this._target - this._b;
+
+                this.onStart();
+                this.Move();
+            },
+            //移动
+            Move: function() {
+                clearTimeout(this._timer);
+                //未到达目标继续移动否则进行下一次滑动
+                if (this._c && this._t < this.Duration) {
+                    this.MoveTo(Math.round(this.Tween(this._t++, this._b, this._c, this.Duration)));
+                    this._timer = setTimeout(Bind(this, this.Move), this.Time);
+                } else {
+                    this.MoveTo(this._target);
+                    this.Auto && (this._timer = setTimeout(Bind(this, this.Next), this.Pause));
+                }
+            },
+            //移动到
+            MoveTo: function(i) {
+                this._slider.style[this._css] = i + "px";
+            },
+            //下一个
+            Next: function() {
+                this.Run(++this.Index);
+            },
+            //上一个
+            Previous: function() {
+                this.Run(--this.Index);
+            },
+            //停止
+            Stop: function() {
+                clearTimeout(this._timer); this.MoveTo(this._target);
+            }
+        };
+    </script>
+
+
+</head>
+<body>
+    <div id="container1">
+        <table style="background: #fff; width: 975px;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+              <tr>
+                <td colspan="3">
+                  <div class="banner" style="text-align: center;font-size: 30px;margin-top: 50px;color: #EF1D6C;font-weight: bold;margin-bottom: 50px">广州唐旗服装贸易有限公司</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 190px;" valign="top">
+                    <div id="navi">
+                        <img src="./files/t_brands.gif" alt="BRANDS" width="150" height="44">
+                        <ul>
+                            <li><a>
+                                <ig src="./files/b_cinema.gif" alt="CINEMA CLUB" width="150" height="35"></a></li><li>
+                                    <a>
+                                        <img src="./files/b_colza.gif" alt="C・O・L・Z・A" width="150" height="35"></a></li>
+                            <li><a>
+                                <img src="./files/b_gdacier.gif" alt="GLACIER" width="150" height="35"></a></li><li>
+                                    <a>
+                                        <img src="./files/b_comfort.gif" alt="Comfort basic" width="150" height="35"></a></li>
+                        </ul>
+                        <img src="./files/t_corporate.gif" alt="CORPORATE" width="150" height="44">
+                        <ul>
+                            <li><a>
+                                <img src="./files/m_01.gif" alt="COMPANY" width="150" height="35"></a></li>
+                            <li><a>
+                                <img src="./files/m_02.gif" alt="RECRUIT" width="150" height="35"></a></li><li><a>
+                                    <img src="./files/m_03.gif" alt="STORE" width="150" height="35"></a></li>
+                            <li><a>
+                                <img src="./files/m_83.gif" alt="Anquiet" width="150" height="35"></a></li>
+                        </ul>
+                    </div>
+                </td>
+                <td style="width: 5px; background-color: #EEEEEE;">
+                </td>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
+                        <tbody><tr style="height: 305px;">
+                            <td align="center">
+                                <div id="idContainer2" class="container" style="position: relative; overflow: hidden;">
+                                    <table id="idSlider2" border="0" cellspacing="0" cellpadding="0" style="position: absolute; left: 0px;">
+                                        <tbody>
+                                            <tr>
+                                                <td class="td_f">
+                                                    <a>
+                                                        <img src="./files/1.jpg"></a>
+                                                </td>
+                                                <td class="td_f">
+                                                    <a>
+                                                        <img src="./files/2.jpg"></a>
+                                                </td>
+                                                <td class="td_f">
+                                                    <a>
+                                                        <img src="./files/3.jpg"></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <script>
+                                    var forEach = function(array, callback, thisObject) {
+                                        if (array.forEach) {
+                                            array.forEach(callback, thisObject);
+                                        } else {
+                                            for (var i = 0, len = array.length; i < len; i++) { callback.call(thisObject, array[i], i, array); }
+                                        }
+                                    }
+
+                                    var st = new SlideTrans("idContainer2", "idSlider2", 3, { Vertical: false });
+
+                                    var nums = [];
+                                    //插入数字
+                                    for (var i = 0, n = st._count - 1; i <= n; ) {
+                                        (nums[i] = $("idNum").appendChild(document.createElement("li"))).innerHTML = ++i;
+                                    }
+
+                                    forEach(nums, function(o, i) {
+                                        o.onmouseover = function() { o.className = "on"; st.Auto = false; st.Run(i); }
+                                        o.onmouseout = function() { o.className = ""; st.Auto = true; st.Run(); }
+                                    })
+
+                                    //设置按钮样式
+                                    st.onStart = function() {
+                                        forEach(nums, function(o, i) { o.className = st.Index == i ? "on" : ""; })
+                                    }
+                                    st.Run();
+                                </script>
+
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="height: 5px; background-color: #EEEEEE;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
+                                    <tbody><tr>
+                                        <td rowspan="3" style="width: 388px;">
+                                            <p><a><img src="./files/4.jpg" width="364" height="280" style="margin-top:5px;margin-left:12px;"></a></p>
+                                        </td>
+                                        <td rowspan="3" style="width: 5px; background-color: #EEEEEE;">
+                                        </td>
+                                        <td align="center" valign="top" style="width: 193px; height: 165px;">
+                                            <a><img style="margin-top:10px;" width="170" height="100" src="./files/2018_02_14_114412689-42bue5avgxbgwv45onpz0b2g.gif"></a><p style="color:#FB1668;text-align:left;margin-left:10px;margin-top:10px; font-size:12px;">高腰流苏牛仔阔腿裤</p><p style="text-align:left;margin-left:10px;font-size:12px;">￥229.00</p>
+                                        </td>
+                                        <td style="width: 5px; background-color: #EEEEEE;">
+                                        </td>
+                                        <td align="center" valign="middle" style="width: 193px;">
+
+                                            <a><img style="margin-top:10px;" width="170" height="100" src="./files/2018_02_14_113121766-42bue5avgxbgwv45onpz0b2g.gif"></a><p style="color:#FB1668;text-align:left;margin-left:10px;margin-top:10px; font-size:12px;">磨白牛仔背带裤</p><p style="text-align:left;margin-left:10px; font-size:12px;">￥229.00</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="height: 5px; background-color: #EEEEEE;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" valign="top" style="width: 193px; height: 149px;">
+                                            <a><img style="margin-top:10px;" width="170" height="100" src="./files/2018_02_14_113609761-42bue5avgxbgwv45onpz0b2g.gif"></a><p style="color:#FB1668;text-align:left;margin-left:10px;margin-top:10px; font-size:12px;">英伦格背带阔腿裤</p><p style="text-align:left;margin-left:10px;font-size:12px;">￥299.00</p>
+                                        </td>
+                                        <td style="width: 5px; background-color: #EEEEEE;">
+                                        </td>
+                                        <td align="center" valign="top" style="width: 193px; height: 149px;">
+                                            <a><img style="margin-top:10px;" width="170" height="100" src="./files/2018_02_14_114005959-42bue5avgxbgwv45onpz0b2g.gif"></a><p style="color:#FB1668;text-align:left;margin-left:10px;margin-top:10px; font-size:12px;">迪士尼合作款卫衣</p><p style="text-align:left;margin-left:10px; font-size:12px;">￥159.00</p>
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="height: 5px; background-color: #EEEEEE;">
+                </td>
+            </tr>
+        </tbody></table>
+        <table style="background: #fff; width: 975px;" border="0" cellpadding="0" cellspacing="0">
+            <tbody><tr>
+
+                <td style="width: 190px; height: 269px; vertical-align: top;" align="center">
+                    <a>
+                        <img style="height: 255px; width: 170px; margin-top: 3px;" src="./files/ppgs.jpg"></a>
+
+                </td>
+                <td style="width: 5px; background-color: #EEEEEE;">
+                </td>
+                <td style="vertical-align: top; height: 269px;">
+                    <table style="width:100%; height:269px; vertical-align:top;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="width:193px;" align="center"><a><img src="./files/2018_02_09_094208080-mssxcr455yvvioyvmdgyjnit.jpg" width="170" height="220"></a></td><td rowspan="3" style="width:5px;background-color: #EEEEEE;"></td><td style="width:193px;" align="center"><a><img src="./files/2018_02_09_093657696-mssxcr455yvvioyvmdgyjnit.jpg" width="170" height="220"></a></td><td rowspan="3" style="width:5px;background-color: #EEEEEE;"></td><td style="width:193px;" align="center"><a><img src="./files/2018_02_09_094238736-mssxcr455yvvioyvmdgyjnit.jpg" width="170" height="220"></a></td></tr><tr><td style="text-align:left"><img style="margin-left:10px;" src="./files/cb.gif"></td><td style="text-align:left"><img style="margin-left:10px;" src="./files/colza.gif"></td><td style="text-align:left"><img src="./files/honeysglacier.gif" style="margin-left:10px;"></td></tr><tr><td colspan="4" style="height:8px;"></td></tr></tbody></table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="height: 5px; background-color: #EEEEEE;">
+                </td>
+            </tr>
+        </tbody></table>
+        <table style="background: #fff; width: 975px;" border="0" cellpadding="0" cellspacing="0">
+            <tbody><tr>
+
+                <td>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px;" align="center">
+                  地址：广州市越秀区广园西路130号
+                </td>
+            </tr>
+            <tr>
+                <td style="padding:10px;" align="center">
+                   沪ICP备 15020069号
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+
+</body></html>
